@@ -78,20 +78,39 @@ bigbool* empty_bool(size_t len)
     return vec;
 }
 
+void equil_size(bigbool* vec1, bigbool* vec2)
+{
+    if (vec1 == NULL || vec2 == NULL)
+    {
+        errno = ERR_ARG;
+        return;
+    }
+
+    if (len_vector(vec1) > len_vector(vec2))
+    {
+        return equil_size(vec2, vec1);
+    }
+    
+    vec1->parts = realloc (vec1->parts, vec2->last_byte + (vec2->last_bit > 0));
+    for(int i = vec1->last_byte + 1; i < vec2->last_byte + (vec2->last_bit > 0); i++)
+    {
+        vec1->parts[i] = 0;  
+    }
+
+    vec1->last_byte = vec2->last_byte;
+    vec1->last_bit = vec2->last_bit;
+
+}
+
 bigbool* BB_from_string(char* str)
 {
     int corrent = BB_check(str);
-    if (corrent)
+    if (corrent != ERR_OK)
     {
         return NULL;
     }
 
-    size_t len = strlen(str);
-    if (len == 0)
-    {
-        errno = ERR_ARG;
-        return NULL;
-    }     
+    size_t len = strlen(str);  
     
     bigbool* vec = empty_bool(len);
     if (vec == NULL)
@@ -171,7 +190,16 @@ bigbool* BB_from_uint64(uint64_t num)
         errno = ERR_MEM;
         return NULL;
     }
- 
+
+    // second method, which is much easier
+    // size_t part = 0;
+    // while (num)
+    // {
+    //     vec->parts[part] = num & 0xFF;
+    //     num >>= 8;
+    //     part++;
+    // }
+
     int ind = 0;
     for (size_t i = 0; i < vec->last_byte; i++)
     {
@@ -240,7 +268,7 @@ bigbool* BB_xor(bigbool* vec1, bigbool* vec2)
     vec->last_byte = vec1->last_byte;
     vec->last_bit = vec1->last_bit;
 
-    for (int i = 0; i <= (vec2->last_byte + (vec2->last_bit > 0) - 1); i++)
+    for (int i = 0; i < vec2->last_byte + (vec2->last_bit > 0); i++)
     {
         vec->parts[i] = vec1->parts[i] ^ vec2->parts[i];
     }
@@ -362,6 +390,11 @@ bigbool* BB_left_shift(bigbool* vec, int num)
         res->parts[i + byte] = first_parts | (vec->parts[i] << (bit));
         first_parts = last_parts;
     }
+
+    if ((vec->last_bit == 0) && (bit != 0))
+    {
+        res->parts[byte + vec->last_byte + 1 - (vec->last_bit == 0)] |= last_parts;
+    }
    
     if (vec->last_bit + bit > 7)
     {
@@ -417,7 +450,7 @@ bigbool* BB_right_shift(bigbool* vec, int num)
 
         first_parts = vec->parts[i] << (8 - bit);
         res->parts[i - byte] = vec->parts[i] >> (bit);
-        res->parts[i - byte - 1] |= first_parts;
+        res->parts[i - byte - 1] |= first_parts;     
     }
 
     return res;
@@ -436,7 +469,7 @@ bigbool* BB_left_circle_shift(bigbool* vec, int num)
         num = num * (-1);
         return BB_right_circle_shift(vec, num);
     }
-
+    
     bigbool* vec1 = BB_left_shift(vec, num);
     if(vec1 == NULL)
     {
@@ -448,7 +481,7 @@ bigbool* BB_left_circle_shift(bigbool* vec, int num)
     {
         return NULL;
     }
-
+        
     bigbool* res = BB_or(vec1, vec2);
     if(res == NULL)
     {

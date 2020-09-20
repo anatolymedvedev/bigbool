@@ -14,8 +14,10 @@ int test_xor()			//vec1 ^ vec2 = (~vec1 & vec2) | (vec1 & ~vec2)
 
     srand (time (NULL));
 
-    bigbool* vec1 = BB_from_uint64 (rand ());
-    bigbool* vec2 = BB_from_uint64 (rand ());
+    bigbool* vec1 = BB_from_uint64 (rand());
+    bigbool* vec2 = BB_from_uint64 (rand());
+
+    equil_size(vec1, vec2);
 
 	//xor = vec1 ^ vec2
     bigbool* vec_xor = BB_xor (vec1, vec2);
@@ -36,6 +38,7 @@ int test_xor()			//vec1 ^ vec2 = (~vec1 & vec2) | (vec1 & ~vec2)
     if (strcmp(str_vec_xor, str_res))
     {
         LOG_ERR("xor - does not work correctly");
+        printf("%s != %s\n", str_vec_xor, str_res);
         count++; 
     }
     
@@ -56,8 +59,13 @@ int test_xor()			//vec1 ^ vec2 = (~vec1 & vec2) | (vec1 & ~vec2)
 int main()
 {
     int count = 0;
-
-    count += test_xor();
+    
+    int value = 10000;
+    while(value)
+    {    
+        count += test_xor();
+        value--;
+    }
 
     if (count > 0)
 	{

@@ -40,6 +40,12 @@ size_t len_vector(bigbool* vec);
 
 bigbool* empty_bool(size_t len);
 
+//Делает вектора равной длины
+//Если функция вернула NULL, то переменная errno указывает на ошибку:
+//ERR_ARG - передан нулевой вектор
+//Если функция вернула equil_size(vec2, vec1), то len_vector(vec1) > len_vector(vec2)
+void equil_size(bigbool* vec1, bigbool* vec2);
+
 //Преобразует строку в вектор
 //Возвращает указатель на вектор, преобразованный из строки
 //Если функция вернула NULL, то переменная errno указывает на ошибку:

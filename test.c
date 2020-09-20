@@ -254,7 +254,7 @@ int test_BB_from_uint64()
     free(string);
     BB_free(vec);
 
-    uint64_t num1 = 6373524901;
+    uint64_t num1 = 0b101111011111001000100010110100101;
     vec = BB_from_uint64(num1);
     string = BB_to_str(vec);
     if (strcmp(string, "101111011111001000100010110100101"))
@@ -278,6 +278,7 @@ int test_BB_from_uint64()
 
     return count;
 }
+
 int test_shifts()
 {
     int count = 0;
@@ -442,7 +443,6 @@ int test_public_functions()
     free(string);
     BB_free(empbool);
     BB_free(vec);
-
 
     return count;
 }
