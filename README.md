@@ -9,8 +9,7 @@ Bigbool - библиотека на языке *С*, позволяющая со
 #### `BB_from_uint64(uint64_t num)`  
 Преобразует 64-битное число в вектор  
 
-Примеры:  
-
+*Примеры:*  
 ```  
 bigbool* vec = BB_from_string("10110111");           //bigbool vec is created with value 10110111.  
 char* string = BB_to_str(vec);                       //string is created with value 10110111.
